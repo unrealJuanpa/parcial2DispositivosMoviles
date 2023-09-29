@@ -1,0 +1,147 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(MaterialApp(
+    debugShowCheckedModeBanner: false,
+    home: MyApp(),
+  ));
+}
+
+class Registro {
+  String titulo;
+  int valor;
+  DateTime fecha;
+
+  Registro({required this.titulo, required this.valor, required this.fecha});
+}
+
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  List<Registro> registros = [];
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text('CRUD'),
+        ),
+        body: Center(
+            child: Column(
+          children: <Widget>[
+            Center(
+              child: Text(""),
+            ),
+            Center(
+              child: ElevatedButton(
+                  onPressed: () {
+                    _createModal(context);
+                  },
+                  child: Text("Crear Registro")),
+            ),
+            Expanded(
+                child: ListView.builder(
+              itemCount: registros.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  title: Text('Dato: ${registros[index].titulo}'),
+                  subtitle: Text('Número: ${registros[index].valor}'),
+                  trailing: Text('Fecha: ${registros[index].fecha.toString()}'),
+                );
+              },
+            ))
+          ],
+        )),
+      ),
+    );
+  }
+
+  void _createModal(BuildContext context) {
+    String titulo = '';
+    int valor = 0;
+    DateTime? fecha;
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Crear Registro'),
+          content: Column(children: [
+            Text("Ingrese los datos para el nuevo registro"),
+            Text(""),
+            TextFormField(
+              decoration:
+                  InputDecoration(labelText: 'Ingrese los datos de Titulo'),
+              onChanged: (value) {
+                titulo = value;
+              },
+            ),
+            TextFormField(
+              decoration: InputDecoration(labelText: 'Número'),
+              keyboardType: TextInputType.number,
+              onChanged: (value) {
+                valor = int.tryParse(value) ?? 0;
+              },
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                DateTime? seleccion = await showDatePicker(
+                  context: context,
+                  initialDate: DateTime.now(),
+                  firstDate: DateTime(2021),
+                  lastDate: DateTime(2025),
+                );
+                if (seleccion != null && seleccion != fecha) {
+                  fecha = seleccion;
+                }
+              },
+              child: Text('Seleccione una fecha'),
+            ),
+          ]),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                if (titulo.isNotEmpty && valor != 0 && fecha != null) {
+                  Registro nuevo =
+                      Registro(titulo: titulo, valor: valor, fecha: fecha!);
+                  registros.add(nuevo);
+                  Navigator.of(context).pop();
+                  print(registros);
+                } else {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text('Error'),
+                        content: Text("Por favor, complete todos los datos"),
+                        actions: <Widget>[
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: Text('Cerrar'),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                }
+              },
+              child: Text('Guardar'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Cancelar'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
