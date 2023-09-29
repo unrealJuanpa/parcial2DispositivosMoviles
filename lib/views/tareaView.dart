@@ -36,6 +36,9 @@ class _MyAppState extends State<MyApp> {
                 child: Text(""),
               ),
               Center(
+                  child: ClipRRect(
+                borderRadius: BorderRadius.circular(
+                    30), // Ajusta el radio para redondear el botón
                 child: ElevatedButton(
                     onPressed: () {
                       // _createModal(context);
@@ -43,7 +46,7 @@ class _MyAppState extends State<MyApp> {
                           context, 'Crear Tarea', -1, true, '', nc, '');
                     },
                     child: Text("Crear nueva tarea")),
-              ),
+              )),
               Expanded(
                   child: StreamBuilder(
                       stream: _streamController.stream,
